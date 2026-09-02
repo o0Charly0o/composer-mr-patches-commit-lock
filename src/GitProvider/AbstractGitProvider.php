@@ -3,7 +3,6 @@
 namespace Cromero\Composer\PatchesCommitLock\GitProvider;
 
 use Composer\IO\IOInterface;
-use Cromero\Composer\PatchesCommitLock\PatchInfo;
 
 abstract class AbstractGitProvider implements GitProviderInterface
 {

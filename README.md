@@ -208,7 +208,7 @@ class CustomGitLabProvider extends AbstractGitProvider
 
 - PHP 8.1+
 - Composer 2.x
-- cweagans/composer-patches ^1.7
+- cweagans/composer-patches ^2.0
 - Internet access to provider APIs
 
 ## License

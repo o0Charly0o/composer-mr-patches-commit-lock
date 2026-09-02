@@ -3,9 +3,7 @@
 namespace Cromero\Composer\PatchesCommitLock\Command;
 
 use Composer\Command\BaseCommand;
-use Composer\Composer;
-use Composer\IO\IOInterface;
-use Composer\Plugin\PluginInterface;
+use Cromero\Composer\PatchesCommitLock\GitProvider\GitProviderRegistry;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +21,7 @@ class MrCommitCommand extends BaseCommand
             ->setHelp(
                 'This command fetches the commit hash from a Drupal.org merge request patch.'
                 . PHP_EOL . PHP_EOL
-                . 'Example: composer patches:mr-commit https://www.drupal.org/files/issues/2023-03-31/2844620.patch'
+                . 'Example: composer patches:mr-commit https://git.drupalcode.org/project/drupal/-/merge_requests/16765.patch'
             );
     }
 
@@ -32,23 +30,23 @@ class MrCommitCommand extends BaseCommand
         $io = $this->getIO();
         $patchUrl = $input->getArgument('patch-url');
 
-        // Create a mock plugin interface since we're not in the full plugin context
-        $plugin = $this->getComposer()->getPluginManager()->getPlugins()[0] ?? null;
-        
-        $downloader = new \Cromero\Composer\PatchesCommitLock\Downloader\DrupalMrDownloader(
-            $this->getComposer(),
-            $io,
-            $plugin
-        );
+        $providerRegistry = new GitProviderRegistry($io);
+        $provider = $providerRegistry->findProviderForUrl($patchUrl);
 
-        $commitHash = $downloader->fetchLatestMrCommitHash($patchUrl);
-        
-        if ($commitHash) {
-            $io->write("<info>Commit hash: {$commitHash}</info>");
-            return 0;
-        } else {
-            $io->writeError("<error>Could not fetch commit hash for patch: {$patchUrl}</error>");
+        if (!$provider) {
+            $io->writeError("<error>No provider found for URL: {$patchUrl}</error>");
             return 1;
         }
+
+        $commitHash = $provider->fetchCommitHash($patchUrl, $io);
+
+        if ($commitHash) {
+            $io->write("<info>Commit hash: {$commitHash}</info>");
+            $io->write("<info>Provider: {$provider->getName()}</info>");
+            return 0;
+        }
+
+        $io->writeError("<error>Could not fetch commit hash for patch: {$patchUrl}</error>");
+        return 1;
     }
 }

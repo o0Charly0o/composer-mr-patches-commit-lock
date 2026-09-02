@@ -1,0 +1,52 @@
+{
+    "name": "cromero/composer-mr-patches-commit-lock",
+    "version": "1.0.0",
+    "description": "Composer plugin to lock Drupal.org MR patch commits in patches.lock.json",
+    "license": "BSD-3-Clause",
+    "type": "composer-plugin",
+    "extra": {
+        "class": "Cromero\\Composer\\PatchesCommitLock\\Plugin",
+        "plugin-modifies-downloads": true
+    },
+    "authors": [
+        {
+            "name": "Cromero",
+            "email": "cromero@example.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "composer-plugin-api": "^2.0",
+        "cweagans/composer-patches": "^1.7",
+        "cweagans/composer-configurable-plugin": "^2.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0",
+        "codeception/codeception": "^5.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cromero\\Composer\\PatchesCommitLock\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cromero\\Composer\\PatchesCommitLock\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true,
+            "cweagans/composer-configurable-plugin": true
+        },
+        "platform": {
+            "php": "8.1"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "static": "phpstan analyse src"
+    }
+}
